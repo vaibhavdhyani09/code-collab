@@ -12,7 +12,7 @@ Multiple users can join a shared room, write code together, chat, and execute co
 - Multi-language support (JS, TS, Python, Java, C++, Go, Rust, Ruby)
 - Live user presence list
 - Real-time chat with typing indicators
-- Code execution via Judge0 API
+- Code execution via Wandbox API (free, no API key required)
 - JWT authentication (login / register)
 - Save code sessions to MongoDB
 - Version history (up to 20 snapshots)
@@ -35,7 +35,7 @@ Node.js / Express Server
   REST API       --> /api/auth, /api/rooms, /api/execute
         |                        |
         v                        v
-   MongoDB                  Judge0 API
+   MongoDB                  Wandbox API
 Users, Rooms              Code execution
 Chat, History
 ```
@@ -98,19 +98,19 @@ docker-compose up --build
 
 | Variable | Description | Default |
 |---|---|---|
-| `PORT` | Server port | `5000` |
+| `PORT` | Server port | `5001` |
 | `CLIENT_URL` | Frontend URL (for CORS) | `http://localhost:5173` |
 | `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/codingplatform` |
 | `JWT_SECRET` | JWT signing secret | — |
 | `JWT_EXPIRES_IN` | Token expiry | `7d` |
-| `RAPIDAPI_KEY` | Key for Judge0 on RapidAPI | — |
-| `JUDGE0_URL` | Judge0 base URL | `https://judge0-ce.p.rapidapi.com` |
+
+> No API key needed — code execution uses [Wandbox](https://wandbox.org/), which is free with no signup.
 
 ### `client/.env`
 
 | Variable | Description | Default |
 |---|---|---|
-| `VITE_SERVER_URL` | Backend URL | `http://localhost:5000` |
+| `VITE_SERVER_URL` | Backend URL | `http://localhost:5001` |
 
 ---
 
@@ -168,7 +168,7 @@ docker-compose up --build
 
 | Method | Endpoint | Body | Auth | Description |
 |---|---|---|---|---|
-| POST | `/api/execute` | `{ code, language }` | No | Execute code via Judge0 |
+| POST | `/api/execute` | `{ code, language }` | No | Execute code via Wandbox |
 
 ---
 
@@ -219,11 +219,13 @@ coding-platform/
 
 ---
 
-## Getting Judge0 (Code Execution)
+## Code Execution
 
-1. Go to https://rapidapi.com/judge0-official/api/judge0-ce
-2. Sign up and subscribe (free tier: 50 req/day)
-3. Copy your API key and paste in `server/.env` as `RAPIDAPI_KEY`
+Powered by [Wandbox](https://wandbox.org/) — a free, open-source compiler API with no API key or signup required.
+
+Supported languages: JavaScript, TypeScript, Python, Java, C++, C, Go, Rust, Ruby.
+
+If you get a 500 error from `/api/execute`, the compiler version names may have changed. Check the current list at `https://wandbox.org/api/list.json` and update `server/routes/execute.js` accordingly.
 
 ---
 
